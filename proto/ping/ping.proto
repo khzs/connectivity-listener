@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package ping;
+option go_package = "github.com/khzs/connectivity-listener/proto/ping";
+
+service PingService {
+  rpc Ping(PingRequest) returns (PingResponse);
+}
+
+message PingRequest {
+  int32 a = 1;
+  int32 b = 2;
+}
+
+message PingResponse {
+  string hash = 1;
+}

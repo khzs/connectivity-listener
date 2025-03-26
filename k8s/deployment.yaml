@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: listener-config
+data:
+  HTTP_PORT: "8080"
+  GRPC_PORT: "50051"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: connectivity-listener
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: connectivity-listener
+  template:
+    metadata:
+      labels:
+        app: connectivity-listener
+    spec:
+      containers:
+        - name: listener
+          image: connectivity-listener:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 50051
+              name: grpc
+          envFrom:
+            - configMapRef:
+                name: listener-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: connectivity-listener
+spec:
+  selector:
+    app: connectivity-listener
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+    - name: grpc
+      port: 50051
+      targetPort: 50051
